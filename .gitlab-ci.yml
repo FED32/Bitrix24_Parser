@@ -6,8 +6,6 @@ workflow:
       variables:
         TAG_NAME: apps1
       when: always
-    #- if: $CI_COMMIT_BRANCH == "dev"
- 
 stages:
 - deploy
 deploy:
