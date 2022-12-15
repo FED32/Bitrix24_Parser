@@ -16,4 +16,3 @@ deploy:
   - docker compose down
   #- docker rmi ecomactionslist-app
   - docker compose up -d
-#
