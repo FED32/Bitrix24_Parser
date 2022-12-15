@@ -16,5 +16,5 @@ deploy:
     - ${TAG_NAME}
   script:
   - docker compose down
-  - docker rmi bitrix24_parser-app
+  #- docker rmi bitrix24_parser-app
   - docker compose up -d
