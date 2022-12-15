@@ -2,7 +2,7 @@ workflow:
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == 'master'
       when: never
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "mastr"
       variables:
         TAG_NAME: apps1
       when: always
@@ -11,9 +11,7 @@ stages:
 deploy:
   stage: deploy
   tags:
-  - apps1
-  
-  
+  - ${TAG_NAME}
   script:
   - docker compose down
   #- docker rmi ecomactionslist-app
