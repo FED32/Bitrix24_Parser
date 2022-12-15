@@ -18,3 +18,4 @@ deploy:
     - docker compose down
   #- docker rmi bitrix24_parser-app
     - docker compose up -d
+#
