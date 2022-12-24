@@ -135,6 +135,8 @@ def extract_utm(row, utm_type):
                 res = re.findall(r'utm_source=(.*?)&', str(row))
             elif utm_type == 'term':
                 res = re.findall(r'utm_term=(.*?)&', str(row))
+            else:
+                return np.nan
 
             if len(res) > 0:
                 return res[0]
@@ -146,7 +148,74 @@ def extract_utm(row, utm_type):
         return np.nan
 
 
-def trans_leads_data(dataset, client_id, account_id, utm_parsing=True):
+def extract_ya_direct(row, f_type):
+    try:
+        if row is not np.nan:
+            if f_type == 'ad_id':
+                pattern = r'ad=(.*?)&'
+            elif f_type == 'banner_id':
+                pattern = r'banner=(.*?)&'
+            elif f_type == 'campaign_name':
+                pattern = r'name=(.*?)&'
+            elif f_type == 'campaign_name_lat':
+                pattern = r'name_lat=(.*?)&'
+            elif f_type == 'campaign_type':
+                pattern = r'campaign_type=(.*?)&'
+            elif f_type == 'campaign_id':
+                pattern = r'campaign=(.*?)&'
+            elif f_type == 'creative_id':
+                pattern = r'creative=(.*?)&'
+            elif f_type == 'device_type':
+                pattern = r'device=(.*?)&'
+            elif f_type == 'gbid':
+                pattern = r'gbid=(.*?)&'
+            elif f_type == 'keyword':
+                pattern = r'key=(.*?)&'
+            elif f_type == 'phrase_id':
+                pattern = r'phrase=(.*?)&'
+            elif f_type == 'retargeting_id':
+                pattern = r'retargeting=(.*?)&'
+            elif f_type == 'coef_goal_context_id':
+                pattern = r'coef_goal_context=(.*?)&'
+            elif f_type == 'interest_id':
+                pattern = r'interest=(.*?)&'
+            elif f_type == 'match_type':
+                pattern = r'match_type=(.*?)&'
+            elif f_type == 'matched_keyword':
+                pattern = r'matched_keyword=(.*?)&'
+            elif f_type == 'adtarget_name':
+                pattern = r'adtarget_name=(.*?)&'
+            elif f_type == 'adtarget_id':
+                pattern = r'adtarget=(.*?)&'
+            elif f_type == 'position':
+                pattern = r'pos=(.*?)&'
+            elif f_type == 'position_type':
+                pattern = r'block=(.*?)&'
+            elif f_type == 'source':
+                pattern = r'source=(.*?)&'
+            elif f_type == 'source_type':
+                pattern = r'type=(.*?)&'
+            elif f_type == 'region_name':
+                pattern = r'region_name=(.*?)&'
+            elif f_type == 'region_id':
+                pattern = r'region=(.*?)&'
+            elif f_type == 'yclid':
+                pattern = r'yclid=(.*?)&'
+            else:
+                return np.nan
+
+            res = re.findall(pattern, str(row))
+            if len(res) > 0:
+                return res[0]
+            else:
+                return np.nan
+        else:
+            return np.nan
+    except:
+        return np.nan
+
+
+def trans_leads_data(dataset, client_id, account_id, utm_parsing=True, ya_direct_parsing=False):
     """Обрабатывает датасет"""
 
     columns = {'ADDRESS': 'address',
@@ -279,26 +348,37 @@ def trans_leads_data(dataset, client_id, account_id, utm_parsing=True):
         dataset['utm_source'] = dataset['source_description'].apply(extract_utm, utm_type='source')
         dataset['utm_term'] = dataset['source_description'].apply(extract_utm, utm_type='term')
 
-
-        # # dataset['utm_campaign'] = dataset['source_description'].apply(
-        # #     lambda x: re.findall(r'utm_campaign=(.*?)&', x)[0] if len(re.findall(r'utm_campaign=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_content'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_content=(.*?)&', x)[0] if len(re.findall(r'utm_content=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_medium'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_medium=(.*?)&', x)[0] if len(re.findall(r'utm_medium=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_source'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_source=(.*?)&', x)[0] if len(re.findall(r'utm_source=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_term'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_term=(.*?)&', x)[0] if len(re.findall(r'utm_term=(.*?)&', x)) > 0 else None)
+    if ya_direct_parsing is True:
+        dataset['ya_dir_ad_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='ad_id')
+        dataset['ya_dir_banner_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='banner_id')
+        dataset['ya_dir_campaign_name'] = dataset['source_description'].apply(extract_ya_direct, f_type='campaign_name')
+        dataset['ya_dir_campaign_name_lat'] = dataset['source_description'].apply(extract_ya_direct, f_type='campaign_name_lat')
+        dataset['ya_dir_campaign_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='campaign_type')
+        dataset['ya_dir_campaign_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='campaign_id')
+        dataset['ya_dir_creative_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='creative_id')
+        dataset['ya_dir_device_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='device_type')
+        dataset['ya_dir_gbid'] = dataset['source_description'].apply(extract_ya_direct, f_type='gbid')
+        dataset['ya_dir_keyword'] = dataset['source_description'].apply(extract_ya_direct, f_type='keyword')
+        dataset['ya_dir_phrase_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='phrase_id')
+        dataset['ya_dir_retargeting_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='retargeting_id')
+        dataset['ya_dir_coef_goal_context_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='coef_goal_context_id')
+        dataset['ya_dir_interest_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='interest_id')
+        dataset['ya_dir_match_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='match_type')
+        dataset['ya_dir_matched_keyword'] = dataset['source_description'].apply(extract_ya_direct, f_type='matched_keyword')
+        dataset['ya_dir_adtarget_name'] = dataset['source_description'].apply(extract_ya_direct, f_type='adtarget_name')
+        dataset['ya_dir_adtarget_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='adtarget_id')
+        dataset['ya_dir_position'] = dataset['source_description'].apply(extract_ya_direct, f_type='position')
+        dataset['ya_dir_position_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='position_type')
+        dataset['ya_dir_source'] = dataset['source_description'].apply(extract_ya_direct, f_type='source')
+        dataset['ya_dir_source_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='source_type')
+        dataset['ya_dir_region_name'] = dataset['source_description'].apply(extract_ya_direct, f_type='region_name')
+        dataset['ya_dir_region_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='region_id')
+        dataset['ya_dir_yclid'] = dataset['source_description'].apply(extract_ya_direct, f_type='yclid')
 
     return dataset
 
 
-def trans_deals_data(dataset, client_id, account_id, utm_parsing=True):
+def trans_deals_data(dataset, client_id, account_id, utm_parsing=True, ya_direct_parsing=False):
     """Обрабатывает датасет"""
 
     columns = {
@@ -423,40 +503,40 @@ def trans_deals_data(dataset, client_id, account_id, utm_parsing=True):
         dataset['utm_source'] = dataset['source_description'].apply(extract_utm, utm_type='source')
         dataset['utm_term'] = dataset['source_description'].apply(extract_utm, utm_type='term')
 
-        # # dataset['utm_campaign'] = dataset['source_description'].apply(
-        # #     lambda x: re.findall(r'utm_campaign=(.*?)&', x)[0] if len(re.findall(r'utm_campaign=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_content'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_content=(.*?)&', x)[0] if len(
-        #         re.findall(r'utm_content=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_medium'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_medium=(.*?)&', x)[0] if len(re.findall(r'utm_medium=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_source'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_source=(.*?)&', x)[0] if len(re.findall(r'utm_source=(.*?)&', x)) > 0 else None)
-        #
-        # dataset['utm_term'] = dataset['source_description'].apply(
-        #     lambda x: re.findall(r'utm_term=(.*?)&', x)[0] if len(re.findall(r'utm_term=(.*?)&', x)) > 0 else None)
+    if ya_direct_parsing is True:
+        dataset['ya_dir_ad_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='ad_id')
+        dataset['ya_dir_banner_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='banner_id')
+        dataset['ya_dir_campaign_name'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                              f_type='campaign_name')
+        dataset['ya_dir_campaign_name_lat'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                                  f_type='campaign_name_lat')
+        dataset['ya_dir_campaign_type'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                              f_type='campaign_type')
+        dataset['ya_dir_campaign_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='campaign_id')
+        dataset['ya_dir_creative_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='creative_id')
+        dataset['ya_dir_device_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='device_type')
+        dataset['ya_dir_gbid'] = dataset['source_description'].apply(extract_ya_direct, f_type='gbid')
+        dataset['ya_dir_keyword'] = dataset['source_description'].apply(extract_ya_direct, f_type='keyword')
+        dataset['ya_dir_phrase_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='phrase_id')
+        dataset['ya_dir_retargeting_id'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                               f_type='retargeting_id')
+        dataset['ya_dir_coef_goal_context_id'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                                     f_type='coef_goal_context_id')
+        dataset['ya_dir_interest_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='interest_id')
+        dataset['ya_dir_match_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='match_type')
+        dataset['ya_dir_matched_keyword'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                                f_type='matched_keyword')
+        dataset['ya_dir_adtarget_name'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                              f_type='adtarget_name')
+        dataset['ya_dir_adtarget_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='adtarget_id')
+        dataset['ya_dir_position'] = dataset['source_description'].apply(extract_ya_direct, f_type='position')
+        dataset['ya_dir_position_type'] = dataset['source_description'].apply(extract_ya_direct,
+                                                                              f_type='position_type')
+        dataset['ya_dir_source'] = dataset['source_description'].apply(extract_ya_direct, f_type='source')
+        dataset['ya_dir_source_type'] = dataset['source_description'].apply(extract_ya_direct, f_type='source_type')
+        dataset['ya_dir_region_name'] = dataset['source_description'].apply(extract_ya_direct, f_type='region_name')
+        dataset['ya_dir_region_id'] = dataset['source_description'].apply(extract_ya_direct, f_type='region_id')
+        dataset['ya_dir_yclid'] = dataset['source_description'].apply(extract_ya_direct, f_type='yclid')
 
     return dataset
-
-
-
-
-
-    # dataset['client_id'] = dataset['client_id'].astype('int', errors='ignore')
-    # dataset['account_id'] = dataset['account_id'].astype('int', errors='ignore')
-    # dataset['date_create'] = pd.to_datetime(dataset['date_create'], errors='ignore')
-    # dataset['date_modify'] = pd.to_datetime(dataset['date_modify'], errors='ignore')
-    # dataset['date_closed'] = pd.to_datetime(dataset['date_closed'], errors='ignore')
-    # dataset['moved_time'] = pd.to_datetime(dataset['moved_time'], errors='ignore')
-    # dataset['id_lead'] = dataset['id_lead'].astype('int', errors='ignore')
-    # leads_df['opportunity'] = leads_df['opportunity'].astype('float', errors='ignore')
-
-
-
-
-
-
 

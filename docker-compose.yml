@@ -16,7 +16,7 @@ services:
 
     command: sh script.sh
     volumes:
-      - /home/get/logs_all//bitrix24_parser/:/app/logs
+      - /home/get/logs_all//bitrix24_parser/:/app/logs/
     
 
 

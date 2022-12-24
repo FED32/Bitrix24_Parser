@@ -10,12 +10,18 @@ from functions import *
 import warnings
 warnings.filterwarnings('ignore')
 
-
-save_data = 1
+############################
+save_data = 0
 to_db = 1
+
+utm_parsing = True
+ya_direct_parsing = True
+
 data_folder = './data'
 leads_folder = './data/leads'
 deals_folder = './data/deals'
+
+#############################
 
 logger = logger.init_logger()
 
@@ -27,7 +33,6 @@ db_name = os.environ.get('ECOMRU_PG_DB_NAME', None)
 user = os.environ.get('ECOMRU_PG_USER', None)
 password = os.environ.get('ECOMRU_PG_PASSWORD', None)
 target_session_attrs = 'read-write'
-
 
 
 db_access = f"host={host} " \
@@ -65,7 +70,7 @@ if connection is not None:
         else:
             leads_date_from = datetime.now().replace(microsecond=0).replace(second=0) - timedelta(days=90)
 
-        # l_date_from = '2022-09-01T23:59:00'
+        # l_date_from = '2022-01-01T23:59:00'
         l_date_from = f"{leads_date_from.date()}T{leads_date_from.time()}"
         l_date_to = f"{datetime.now().replace(microsecond=0).replace(second=0).date()}T{datetime.now().replace(microsecond=0).replace(second=0).time()}"
 
@@ -79,7 +84,8 @@ if connection is not None:
                     leads_df = trans_leads_data(dataset=leads_df,
                                                 client_id=client_id,
                                                 account_id=account_id,
-                                                utm_parsing=True)
+                                                utm_parsing=utm_parsing,
+                                                ya_direct_parsing=ya_direct_parsing)
 
                     if save_data == 1:
                         if not os.path.isdir(data_folder):
@@ -137,7 +143,8 @@ if connection is not None:
                     deals_df = trans_deals_data(dataset=deals_df,
                                                 client_id=client_id,
                                                 account_id=account_id,
-                                                utm_parsing=True)
+                                                utm_parsing=utm_parsing,
+                                                ya_direct_parsing=ya_direct_parsing)
 
                     if save_data == 1:
                         if not os.path.isdir(data_folder):
