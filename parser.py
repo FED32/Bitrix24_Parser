@@ -2,6 +2,7 @@ import logger
 import json
 import requests
 import os
+import time
 from datetime import datetime, date
 from datetime import timedelta
 import pandas as pd
@@ -16,6 +17,12 @@ to_db = 1
 
 utm_parsing = True
 ya_direct_parsing = True
+
+n_attempts = 5
+
+api_servers = ['http://178.154.221.218:5057',
+               'http://apps0.ecomru.ru:8087',
+               'https://apps0.ecomru.ru:4437']
 
 data_folder = './data'
 leads_folder = './data/leads'
@@ -74,9 +81,17 @@ if connection is not None:
         l_date_from = f"{leads_date_from.date()}T{leads_date_from.time()}"
         l_date_to = f"{datetime.now().replace(microsecond=0).replace(second=0).date()}T{datetime.now().replace(microsecond=0).replace(second=0).time()}"
 
-        leads = get_leads(date_from=l_date_from, date_to=l_date_to, url=client_url)
+        leads = None
+        for base_url in api_servers:
+            try:
+                leads = get_leads(base_url=base_url, date_from=l_date_from, date_to=l_date_to, url=client_url)
+                logger.info(f'{base_url} - ecom api connection ok')
+                break
+            except:
+                logger.error(f'{base_url} - ecom api connection error')
+                continue
 
-        if leads.status_code == 200:
+        if leads is not None and leads.status_code == 200:
             if type(leads.json()) is list:
                 leads_df = pd.DataFrame(leads.json())
                 # print(leads_df.shape)
@@ -97,30 +112,28 @@ if connection is not None:
                             os.mkdir(folder)
 
                         leads_df.to_csv(f"{folder}/leads_{client_id}_{str(date.today())}.csv", sep=';', index=False)
-                        print('Leads saved')
                         logger.info('Leads saved')
 
                     if to_db == 1:
-                        upl = upl_to_db(db_params, dataset=leads_df, table_name='leads_fields_btrx')
-                        if upl is not None:
-                            print('Leads - Upload to db successful')
-                            logger.info('Leads - Upload to db successful')
-
-                        else:
-                            print('Leads - Upload to db error')
-                            logger.error('Leads - Upload to db error')
+                        n = 0
+                        while n < n_attempts:
+                            upl = upl_to_db(db_params, dataset=leads_df, table_name='leads_fields_btrx')
+                            if upl is not None:
+                                logger.info('Leads - Upload to db successful')
+                                break
+                            else:
+                                logger.error('Leads - Upload to db error')
+                                time.sleep(5)
+                                n += 1
                     else:
-                        print('Upl to db canceled')
                         logger.info('Upl to db canceled')
+
                 else:
-                    print('No leads data for the period')
                     logger.info('No leads data for the period')
             else:
-                print('Ecom API or bitrix error')
                 logger.error('Ecom API or bitrix error')
 
         else:
-            print('Ecom API error')
             logger.error('Ecom API error')
 
         deals_last_date = get_last_date2(db_access, client_id, table_name='deals_fields_btrx')
@@ -134,9 +147,17 @@ if connection is not None:
         d_date_from = f"{deals_date_from.date()}T{deals_date_from.time()}"
         d_date_to = f"{datetime.now().replace(microsecond=0).replace(second=0).date()}T{datetime.now().replace(microsecond=0).replace(second=0).time()}"
 
-        deals = get_deal_list(date_from=d_date_from, date_to=d_date_to, url=client_url)
+        deals = None
+        for base_url in api_servers:
+            try:
+                deals = get_deal_list(base_url=base_url, date_from=d_date_from, date_to=d_date_to, url=client_url)
+                logger.info(f'{base_url} - ecom api connection ok')
+                break
+            except:
+                logger.error(f'{base_url} - ecom api connection error')
+                continue
 
-        if deals.status_code == 200:
+        if deals is not None and deals.status_code == 200:
             if type(deals.json()) is list:
                 deals_df = pd.DataFrame(deals.json())
                 if deals_df.shape[0] > 0:
@@ -156,31 +177,29 @@ if connection is not None:
                             os.mkdir(folder)
 
                         deals_df.to_csv(f"{folder}/deals_{client_id}_{str(date.today())}.csv", sep=';', index=False)
-                        print('Deals saved')
                         logger.info('Deals saved')
 
                     if to_db == 1:
-                        upl = upl_to_db(db_params, dataset=deals_df, table_name='deals_fields_btrx')
-                        if upl is not None:
-                            print('Deals - Upload to db successful')
-                            logger.info('Deals - Upload to db successful')
-                        else:
-                            print('Deals - Upload to db error')
-                            logger.error('Deals - Upload to db error')
+                        n = 0
+                        while n < n_attempts:
+                            upl = upl_to_db(db_params, dataset=deals_df, table_name='deals_fields_btrx')
+                            if upl is not None:
+                                logger.info('Deals - Upload to db successful')
+                                break
+                            else:
+                                logger.error('Deals - Upload to db error')
+                                time.sleep(5)
+                                n += 1
                     else:
-                        print('Upl to db canceled')
                         logger.info('Upl to db canceled')
+
                 else:
-                    print('No deals data for the period')
                     logger.info('No deals data for the period')
             else:
-                print('Ecom API or bitrix error')
                 logger.error('Ecom API or bitrix error')
         else:
-            print('Ecom API error')
             logger.error('Ecom API error')
 else:
-    print('Error connection to db')
     logger.error('Error connection to db')
 
 

@@ -2,18 +2,12 @@ import json
 import requests
 import psycopg2
 import re
-import glob
-
 from sqlalchemy import create_engine
-from datetime import datetime
 import pandas as pd
 import numpy as np
 
 
-base_url = 'http://178.154.221.218:5057'
-
-
-def get_leads(date_from, date_to, url):
+def get_leads(base_url, date_from, date_to, url):
     """Загружает лиды через ecom API"""
     url_ = base_url + '/bitrix/get_leads'
     head = {"Content-Type": "application/json"}
@@ -25,7 +19,7 @@ def get_leads(date_from, date_to, url):
     return requests.post(url_, headers=head, data=json.dumps(body))
 
 
-def get_deal_list(date_from, date_to, url):
+def get_deal_list(base_url, date_from, date_to, url):
     url_ = base_url + '/bitrix/get_deal_list'
     head = {"Content-Type": "application/json"}
     body = {
@@ -156,7 +150,7 @@ def extract_ya_direct(row, f_type):
             elif f_type == 'banner_id':
                 pattern = r'banner=(.*?)&'
             elif f_type == 'campaign_name':
-                pattern = r'name=(.*?)&'
+                pattern = r'campaign_name=(.*?)&'
             elif f_type == 'campaign_name_lat':
                 pattern = r'name_lat=(.*?)&'
             elif f_type == 'campaign_type':
