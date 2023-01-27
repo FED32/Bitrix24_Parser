@@ -18,11 +18,13 @@ to_db = 1
 utm_parsing = True
 ya_direct_parsing = True
 
-n_attempts = 5
+n_attempts = 3
 
-api_servers = ['http://178.154.221.218:5057',
-               'http://apps0.ecomru.ru:8087',
-               'https://apps0.ecomru.ru:4437']
+api_servers = [
+    # 'http://178.154.221.218:5057',
+    'http://apps0.ecomru.ru:8087',
+    'https://apps0.ecomru.ru:4437'
+]
 
 data_folder = './data'
 leads_folder = './data/leads'
