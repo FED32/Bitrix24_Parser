@@ -11,7 +11,7 @@ stages:
 deploy:
   stage: deploy
   tags:
-    - ${TAG_NAME}
+  - ${TAG_NAME}
   script:
   - docker compose down
   #- docker rmi ecomactionslist-app
